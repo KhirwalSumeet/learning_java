@@ -131,6 +131,27 @@ class LinkedList
 	    head = llist;
 	}
 	
+	public static void loopDetection() {
+	    Node llist = head;
+	    Node llist_2x = head;
+        llist = llist.next;
+        llist_2x = llist_2x.next.next;
+        while( llist != null) {
+            if(llist == llist_2x)
+                break;
+            else{
+                prev = llist;
+                prev_2x = llist_2x;
+                
+            }
+        }
+        if(llist == null && llist == llist_2x) {
+            System.out.println("Loop detected");
+        } else {
+            System.out.println("No lopp detected");
+        }
+	}
+	
 	public static void main(String[] args) {
 	    LinkedList llist = new LinkedList();
 	    llist.head = new Node(1);
@@ -141,8 +162,8 @@ class LinkedList
 	    insertAfter(10, 50);
 	    delete(10);
 	    printList();
-	   // swapNode(1,3);
-	    reverseList();
+	    swapNode(1,3);
+	   // reverseList();
 	    printList();
 	}
 }
