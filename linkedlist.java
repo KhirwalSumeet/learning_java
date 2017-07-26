@@ -1,3 +1,10 @@
+/* package whatever; // don't place package name! */
+
+import java.util.*;
+import java.lang.*;
+import java.io.*;
+
+/* Name of the class has to be "Main" only if the class is public. */
 class LinkedList
 {
 	static Node head; // head of list
@@ -56,6 +63,74 @@ class LinkedList
 	    }	    
 	}
 	
+	public static void swapNode(int first, int sec) {
+	    Node llist = head;
+        Node curF = null;
+        Node prevF = null;
+        Node curS = null;
+        Node prevS = null;
+        Node temp = null;
+        int count = 0;
+        if(first >= sec) {
+            System.out.println("No swapping done as element order passed is wrong");
+        } else {
+            while (llist.next != null) {
+                count++;
+                if(count == first) {
+                    if(prevF == null)
+                        prevF = llist;
+                    curF = llist;
+                } else if (count == first - 1) {
+                    prevF = llist;
+                } else if (count == sec - 1) {
+                    prevS = llist;
+                } else if (count == sec) {
+                    curS = llist;
+                }
+                llist = llist.next;
+            }
+            if(count + 1 == sec) {
+                curS = llist;
+            }
+            if(prevS == null || curS == null || prevF == null || curF == null) {
+                System.out.println("Range out of bounds of elements");
+            } else if (prevF == curF) {
+                System.out.println("First element is swapped");
+                temp.next = prevF.next;
+                prevF.next = curS.next;
+                curS.next = temp.next;
+                prevS.next = prevF;
+                head = curS.next;
+            } else {
+                System.out.println("First element is not swapped");
+               
+                prevS.next = curF;
+                prevF.next = curS;
+                temp = curS;
+                curS.next = curF.next;
+                curF.next = temp.next;
+                
+            }
+        }
+	}
+	
+	public static void reverseList() {
+	    Node cur = null;
+	    Node prev = null;
+	    Node llist = head;
+	    prev = llist;
+	    llist = llist.next;
+	    prev.next = null;
+	    while(llist.next != null) {
+	        cur = llist;
+            llist = llist.next;
+            cur.next = prev;
+            prev = cur;
+	    }
+	    llist.next = prev;
+	    head = llist;
+	}
+	
 	public static void main(String[] args) {
 	    LinkedList llist = new LinkedList();
 	    llist.head = new Node(1);
@@ -65,6 +140,9 @@ class LinkedList
 	    pushData(1000);
 	    insertAfter(10, 50);
 	    delete(10);
+	    printList();
+	   // swapNode(1,3);
+	    reverseList();
 	    printList();
 	}
 }
