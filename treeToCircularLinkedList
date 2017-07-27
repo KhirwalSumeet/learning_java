@@ -1,0 +1,58 @@
+/* Node of a doubly linked list */
+import java.util.Scanner;
+class Node
+{
+    int data;
+    Node left; // Pointer to next node in DLL
+    Node right; // Pointer to previous node in DLL
+    Node(int d) {
+        data = d;
+        left = null;
+        right = null;
+    }
+};
+class DoublyLinkedList
+{
+    Node root = null;
+    
+    public void insertData (int value) {
+        if (root == null) {
+            root.data = value;
+        } else {
+            Node leaf = root;
+            while(leaf != null) {
+                
+                if (leaf.data > value) {
+                    if (leaf.right == null) {
+                        Node newdata = new Node(value);
+                        leaf.right = newdata;
+                        break;
+                    } else {
+                        leaf = leaf.right;
+                        continue;
+                    }
+                } else {
+                    if (leaf.left == null) {
+                        Node newdata = new Node(value);
+                        leaf.left = newdata;
+                        break;
+                    } else {
+                        leaf = leaf.left;
+                        continue;
+                    }
+                }
+            }
+        }
+    }
+    
+    public static void main(String args[]){
+        Scanner scanner = new Scanner(System.in);
+        DoublyLinkedList dl = new DoublyLinkedList();
+        
+        // System.out.println("Enter your username: ");
+        // String username = scanner.nextLine();
+        
+        dl.insertData(1);
+        
+    }
+}
