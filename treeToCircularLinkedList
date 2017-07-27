@@ -17,12 +17,13 @@ class DoublyLinkedList
     
     public void insertData (int value) {
         if (root == null) {
-            root.data = value;
+            Node newdata = new Node(value);
+            root = newdata;
         } else {
             Node leaf = root;
             while(leaf != null) {
                 
-                if (leaf.data > value) {
+                if (leaf.data < value) {
                     if (leaf.right == null) {
                         Node newdata = new Node(value);
                         leaf.right = newdata;
@@ -45,6 +46,14 @@ class DoublyLinkedList
         }
     }
     
+    public void printTree(Node leaf) {
+        if (leaf.left != null)
+            printTree(leaf.left);
+        System.out.println(leaf.data);
+        if (leaf.right != null)
+            printTree(leaf.right);
+    }
+    
     public static void main(String args[]){
         Scanner scanner = new Scanner(System.in);
         DoublyLinkedList dl = new DoublyLinkedList();
@@ -52,7 +61,11 @@ class DoublyLinkedList
         // System.out.println("Enter your username: ");
         // String username = scanner.nextLine();
         
-        dl.insertData(1);
-        
+        int isInput = 1;
+        while (isInput == 1) {
+            dl.insertData(Integer.parseInt(scanner.nextLine()));
+            isInput = Integer.parseInt(scanner.nextLine());
+        }
+        dl.printTree(dl.root);
     }
 }
