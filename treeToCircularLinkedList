@@ -54,6 +54,21 @@ class DoublyLinkedList
             printTree(leaf.right);
     }
     
+    public void toCircularLinkedList(Node leaf, Node circular) {
+        if (leaf.left != null)
+            toCircularLinkedList(leaf.left, circular);
+        if (circular == null) {
+            Node newdata = new Node(leaf.data);
+            circular = newdata;
+        } else {
+            Node newdata = new Node(leaf.data);
+            leaf.right = newdata;
+            newdata.left = leaf;
+        }
+        if (leaf.right != null)
+            toCircularLinkedList(leaf.right, circular);
+    }
+    
     public static void main(String args[]){
         Scanner scanner = new Scanner(System.in);
         DoublyLinkedList dl = new DoublyLinkedList();
@@ -67,5 +82,6 @@ class DoublyLinkedList
             isInput = Integer.parseInt(scanner.nextLine());
         }
         dl.printTree(dl.root);
+        dl.toCircularLinkedList(dl.root, null);
     }
 }
