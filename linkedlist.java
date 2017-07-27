@@ -63,53 +63,60 @@ class LinkedList
 	    }	    
 	}
 	
-	public static void swapNode(int first, int sec) {
+	public static void swapNode(int first, int second) {
 	    Node llist = head;
         Node curF = null;
         Node prevF = null;
         Node curS = null;
         Node prevS = null;
-        Node temp = null;
+        Node temp = new Node(1);
         int count = 0;
-        if(first >= sec) {
+        if(first >= second) {
             System.out.println("No swapping done as element order passed is wrong");
         } else {
-            while (llist.next != null) {
+            while (llist != null) {
                 count++;
                 if(count == first) {
-                    if(prevF == null)
-                        prevF = llist;
                     curF = llist;
-                } else if (count == first - 1) {
+                }
+                if (count == first - 1) {
                     prevF = llist;
-                } else if (count == sec - 1) {
+                }
+                if (count == second - 1 && second - first > 1) {
                     prevS = llist;
-                } else if (count == sec) {
+                }
+                if (count == second) {
                     curS = llist;
                 }
                 llist = llist.next;
             }
-            if(count + 1 == sec) {
-                curS = llist;
-            }
-            if(prevS == null || curS == null || prevF == null || curF == null) {
+            if (curS == null || curF == null) {
                 System.out.println("Range out of bounds of elements");
-            } else if (prevF == curF) {
-                System.out.println("First element is swapped");
-                temp.next = prevF.next;
-                prevF.next = curS.next;
-                curS.next = temp.next;
-                prevS.next = prevF;
-                head = curS.next;
-            } else {
-                System.out.println("First element is not swapped");
-               
+            } else if (prevF != null && prevS != null) {
                 prevS.next = curF;
                 prevF.next = curS;
-                temp = curS;
+                temp.next = curS.next;
                 curS.next = curF.next;
                 curF.next = temp.next;
-                
+            } else {
+                if (second - first == 1) {
+                    if(prevF != null){
+                        prevF.next = curS;
+                        curF.next = curS.next;
+                        curS.next = curF;
+                    } else {
+                        curF.next = curS.next;
+                        curS.next = curF;
+                        head = curS;
+                    }
+                } else {
+                    System.out.println(prevS);
+                        prevS.next = curF;
+                        temp.next = curF.next;
+                        curF.next = curS.next;
+                        curS.next = temp.next;
+                        head = curS;
+                }
             }
         }
 	}
@@ -132,38 +139,39 @@ class LinkedList
 	}
 	
 	public static void loopDetection() {
-	    Node llist = head;
-	    Node llist_2x = head;
-        llist = llist.next;
-        llist_2x = llist_2x.next.next;
-        while( llist != null) {
-            if(llist == llist_2x)
-                break;
-            else{
-                prev = llist;
-                prev_2x = llist_2x;
+	   // Node llist = head;
+	   // Node llist_2x = head;
+    //     llist = llist.next;
+    //     llist_2x = llist_2x.next.next;
+    //     while( llist != null) {
+    //         if(llist == llist_2x)
+    //             break;
+    //         else{
+    //             prev = llist;
+    //             prev_2x = llist_2x;
                 
-            }
-        }
-        if(llist == null && llist == llist_2x) {
-            System.out.println("Loop detected");
-        } else {
-            System.out.println("No lopp detected");
-        }
+    //         }
+    //     }
+    //     if(llist == null && llist == llist_2x) {
+    //         System.out.println("Loop detected");
+    //     } else {
+    //         System.out.println("No lopp detected");
+    //     }
 	}
 	
 	public static void main(String[] args) {
 	    LinkedList llist = new LinkedList();
 	    llist.head = new Node(1);
 	    last = head;
-	    pushData(10);
-	    pushData(100);
-	    pushData(1000);
+	    int i = 1;
+	    while (i < 10) {
+	        i++;
+	        pushData(i);
+	    }
 	    insertAfter(10, 50);
 	    delete(10);
-	    printList();
-	    swapNode(1,3);
-	   // reverseList();
+	    swapNode(3,5);
+	    reverseList();
 	    printList();
 	}
 }
