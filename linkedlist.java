@@ -138,25 +138,87 @@ class LinkedList
 	    head = llist;
 	}
 	
+	public static void makeLoop () {
+	    Node n = head;
+	    Node temp = null;
+	    while(n != null) {
+	        if (n.data == 5) {
+	            temp = n;
+	        } else if(n.data == 9) {
+	            n.next = temp.next;
+	            break;
+	        }
+	        n = n.next;
+	    }
+	    
+	}
+	
+	public static int getLoopPosition (int loopLength) {
+	    Node llist_slow = head;
+	    Node llist = head;
+	    int i = 0;
+	    while (i < loopLength) {
+	        i++;
+	        llist_slow = llist_slow.next;
+	    }
+	    i = 0;
+	    int pos = 1;
+	    while (i == 0) {
+	        if (llist.next == llist_slow.next) {
+	            break;
+	        } else {
+	            llist_slow = llist_slow.next;
+	            llist = llist.next;
+	            pos++;
+	        }
+	    }
+	    return pos;
+	}
+	
+	public static void removeLoop (int pos) {
+	    Node llist = head;
+	    int count = 0;
+	    while (llist != null) {
+	        count++;
+	        if (count == pos) {
+	            llist.next = null;
+	            break;
+	        }
+	        llist = llist.next;
+	    }
+	}
+	
 	public static void loopDetection() {
-	   // Node llist = head;
-	   // Node llist_2x = head;
-    //     llist = llist.next;
-    //     llist_2x = llist_2x.next.next;
-    //     while( llist != null) {
-    //         if(llist == llist_2x)
-    //             break;
-    //         else{
-    //             prev = llist;
-    //             prev_2x = llist_2x;
-                
-    //         }
-    //     }
-    //     if(llist == null && llist == llist_2x) {
-    //         System.out.println("Loop detected");
-    //     } else {
-    //         System.out.println("No lopp detected");
-    //     }
+	    Node llist = head;
+	    Node llist_2x = head;
+        llist = llist.next;
+        llist_2x = llist_2x.next.next;
+        int count = 1;
+        int state = 0;
+        while( llist != null && llist_2x != null && llist_2x.next != null) {
+            if(llist == llist_2x && state == 0){
+                state = 1;
+                llist = llist.next;
+            } else if (state == 1) {
+                if (llist == llist_2x) {
+                    break;
+                } else {
+                    llist = llist.next;
+                    count++;
+                }
+            }
+            else{
+                llist = llist.next;
+                llist_2x = llist_2x.next.next;
+            }
+        }
+        if (llist == llist_2x) {
+            System.out.println("Loop detected");
+            int position = getLoopPosition(count);
+            removeLoop (count + position);
+        } else {
+            System.out.println("No lopp detected");
+        }
 	}
 	
 	public static void main(String[] args) {
@@ -172,6 +234,8 @@ class LinkedList
 	    delete(10);
 	    swapNode(3,5);
 	    reverseList();
+	    makeLoop();
+	    loopDetection();
 	    printList();
 	}
 }
