@@ -88,6 +88,48 @@ class DoublyLinkedList
         }
     }
     
+    public void deleteNode (Node leaf, int value) {
+        if (leaf.data == value) {
+            // Node successor = getSuccessor(leaf.right);
+        } else if (leaf.data > value) {
+            if (leaf.left.data == value) {
+                Node successor = getSuccessor(leaf.left.right, null);  
+                successor.right = leaf.left.right;
+                successor.left = leaf.left.left;
+                leaf.left = successor;
+            } else {
+                deleteNode(leaf.left, value);
+            }
+        } else {
+            if (leaf.right.data == value) {
+                Node successor = getSuccessor(leaf.right.right, null);
+                successor.right = leaf.right.right;
+                successor.left = leaf.right.left;
+                leaf.right = successor;
+            } else {
+                deleteNode(leaf.right, value);
+            }
+        }
+    }
+    
+    public Node getSuccessor (Node leaf, Node last) {
+        if (leaf.left == null && leaf.right != null) {
+            last = leaf;
+            return getSuccessor(leaf.right, last);
+        } else if (leaf.left != null) {
+            last = leaf;
+            return getSuccessor(leaf.left, last);
+        } else {
+            if (last != null) {
+                if (last.left != null)
+                    last.left = null;
+                else
+                    last.right = null;
+            }
+            return leaf;
+        }
+    }
+    
     public static void main(String args[]){
         Scanner scanner = new Scanner(System.in);
         DoublyLinkedList dl = new DoublyLinkedList();
@@ -98,8 +140,12 @@ class DoublyLinkedList
         }
         System.out.println("Printing tree :");
         dl.printTree(dl.root);
-        Node cData = dl.toCircularLinkedList(dl.root, null);
-        System.out.println("Printing circular linked list :");
-        dl.printCircular(dl.chead);
+        dl.deleteNode(dl.root, 11);
+        dl.deleteNode(dl.root, 100);
+        System.out.println("Printing new tree :");
+        dl.printTree(dl.root);
+        // Node cData = dl.toCircularLinkedList(dl.root, null);
+        // System.out.println("Printing circular linked list :");
+        // dl.printCircular(dl.chead);
     }
 }
