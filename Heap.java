@@ -75,7 +75,11 @@ class Heap {
         adjustDown(index);
     }
     
+    public void heapify(int index) {
+        adjustDown(index/2);
+    }
 }
+
 
 class heapDemo {
     public static void main (String args[]) {
