@@ -21,6 +21,8 @@ interface GraphInterface {
     public abstract boolean checkEdge(int node1, int node2);
     public abstract int inDegree(int node1);
     public abstract int outDegree(int node1);
+    public abstract LinkedList<Integer> getAdjacentNodes(int node);
+    public abstract LinkedList<Integer> getParentNodes(int node);
 }
 
 class adjacencyList implements GraphInterface {
@@ -67,6 +69,13 @@ class adjacencyList implements GraphInterface {
         return data.get(node);
     }
     
+    public LinkedList<Integer> getParentNodes(int node) {
+        LinkedList<Integer> nodes = new LinkedList<Integer>();
+        for (int i = 0; i < vertexCount; i++)
+            if (data.get(i).contains(node))
+                nodes.add(i);
+        return nodes;
+    }
 }
 
 class adjacencyMatrix implements GraphInterface {
@@ -115,6 +124,15 @@ class adjacencyMatrix implements GraphInterface {
                 nodes.add(i);
         return nodes;
     }
+    
+    public LinkedList<Integer> getParentNodes(int node) {
+        LinkedList<Integer> nodes = new LinkedList<Integer>();
+        for (int i = 0; i < maxSize; i++) { 
+            if (matrix[i][node] == 1)
+                nodes.add(i);
+        }
+        return nodes;
+    }
 }
 
 class Graph implements GraphInterface {
@@ -158,6 +176,10 @@ class Graph implements GraphInterface {
         return type == "Matrix"? am.getAdjacentNodes(node) : al.getAdjacentNodes(node);
     }
     
+    public LinkedList<Integer> getParentNodes(int node) {
+        return type == "Matrix"? am.getParentNodes(node) : al.getParentNodes(node);
+    }
+    
 }
 
 class GraphDemo {
@@ -182,14 +204,50 @@ class GraphDemo {
         int[] visited = new int[gr.vertexCount];
 		Stack<Integer> stack = new Stack<Integer>();
 		Stack<Integer> temp = new Stack<Integer>();
+		Stack<Integer> temp1 = new Stack<Integer>();
 		for (int i = 0; i < gr.vertexCount; i++)
 		    if (visited[i] == 0) {
 		        stack.push(i);
 		        topologyTraversal(temp, stack, visited, gr);
 		        while(!temp.empty()) {
-        		    System.out.println(temp.pop());
+		            temp1.push(temp.pop());
         		}
 		    }
+		while(!temp1.empty()) {
+		    System.out.println(temp1.pop());
+		}
+    }
+    
+    public void kahnTopologyTraversal(int[] visited, int[] inDegree, Queue<Integer> queue, Graph gr) {
+        int state = 0;
+        for (int i = 0; i < visited.length; i++)
+            if (visited[i] == 0 && inDegree[i] == 0) {
+                visited[i] = 1;
+                LinkedList<Integer> current = gr.getAdjacentNodes(i);
+                int child = current.peek() == null?-1:current.poll();
+        	    while (child != -1) {
+        	        state = 1;
+        	        inDegree[child]--;
+        	        child = current.peek() == null?-1:current.poll();
+        	    }
+                queue.add(i);
+            }
+        if (state == 1)
+            kahnTopologyTraversal(visited, inDegree, queue, gr);
+    }
+    
+    public void kahnTopology(Graph gr) {
+        int[] visited = new int[gr.vertexCount];
+        int[] degree = new int[gr.vertexCount];
+        for (int i = 0; i < degree.length; i++)
+            degree[i] = gr.inDegree(i);
+		Queue<Integer> queue = new LinkedList();
+        for (int i = 0; i < visited.length; i++)
+            if (visited[i] == 0)
+                kahnTopologyTraversal(visited, degree, queue, gr);
+        while (!queue.isEmpty()) {
+            System.out.println(queue.poll());
+        }
     }
     
 	public static void main (String[] args) {
@@ -202,7 +260,9 @@ class GraphDemo {
 		gr.insertEdge(4,0);
 	    
 	    GraphDemo gd = new GraphDemo();
+	    System.out.println("Normal Topology Results :");
 	    gd.topology(gr);
-	    
+	    System.out.println("Kahn Topology Results :");
+	    gd.kahnTopology(gr);
 	}
 }
