@@ -13,19 +13,31 @@ class Node {
     }
 }
 
-class adjacencyList {
+interface GraphInterface {
+    public abstract void insertEdge(int node1, int node2);
+    public abstract boolean checkEdge(int node1, int node2);
+    public abstract int findDegree(int node1);
+}
+
+class adjacencyList implements GraphInterface {
     List<LinkedList<Integer>> data;
+    int isDirected;
+    Node[] vertexData;
     
-    adjacencyList(int size) {
+    adjacencyList(int size, int directed) {
+        isDirected = directed;
         data = new ArrayList<LinkedList<Integer>>();
+        vertexData = new Node[size];
         for(int i = 0; i < size; i++) {
+            vertexData[i] = new Node(i);
             data.add(new LinkedList<Integer>());
         }
     }
     
     public void insertEdge(int node1, int node2) {
         data.get(node1).addLast(node2);
-        data.get(node2).addLast(node1);
+        if (isDirected == 0)
+            data.get(node2).addLast(node1);
     }
     
     public boolean checkEdge(int node1, int node2) {
@@ -37,26 +49,75 @@ class adjacencyList {
     }
 }
 
-class adjacencyMatrix {
-    int verticeCount;
-    int maxSize = 100;
-    int[][] matrix = new int[maxSize][maxSize];
-
-    public void insertEdge(int node1, int node2) {
-        matrix[node1 - 1][node2 - 1] = 1;
+class adjacencyMatrix implements GraphInterface {
+    int maxSize;
+    int[][] matrix;
+    int isDirected;
+    Node[] vertexData;
+    
+    adjacencyMatrix(int size, int directed) {
+        vertexData = new Node[size];
+        for (int i = 0; i < size; i++)
+            vertexData[i] = new Node(i);
+        isDirected = directed;
+        maxSize = size;
+        matrix = new int[size][size];
     }
     
-    public int checkEdge(int node1, int node2) {
-        return matrix[node1 - 1][node2 - 1];
+    public void insertEdge(int node1, int node2) {
+        matrix[node1][node2] = 1;
+        if (isDirected == 0)
+            matrix[node2][node1] = 1;
+    }
+    
+    public boolean checkEdge(int node1, int node2) {
+        return matrix[node1][node2] == 1 ? true : false;
+    }
+    
+    public int findDegree(int node1) {
+        int count = 0;
+        for (int i = 0; i < maxSize; i++)
+            count = count + (matrix[i][0] == 1 ? 1 : 0);
+        return count;
+    }
+    
+}
+
+class Graph implements GraphInterface {
+    String type;
+    adjacencyMatrix am;
+    adjacencyList al;
+    
+    Graph(String gType, int size, int isDirected) {
+        if (gType == "Matrix") {
+            type = "Matrix";
+            am = new adjacencyMatrix(size, isDirected);
+        } else {
+            type = "List";
+            al = new adjacencyList(size, isDirected);
+        }
+    }
+    
+    public void insertEdge(int node1, int node2) {
+        if (type == "Matrix")
+            am.insertEdge(node1, node2);
+        else
+            al.insertEdge(node1, node2);
+    }
+    
+    public boolean checkEdge(int node1, int node2) {
+        return type == "Matrix"? am.checkEdge(node1, node2) : al.checkEdge(node1, node2);
+    }
+    
+    public int findDegree(int node1) {
+        return type == "Matrix"? am.findDegree(node1) : al.findDegree(node1);
     }
 }
 
-class graphDemo {
+class GraphDemo {
     
 	public static void main (String[] args) {
-	    Scanner scanner = new Scanner(System.in);
-	    adjacencyList gr = new adjacencyList(5);
-		
+	    Graph gr = new Graph("Matrix",50,0);
 		gr.insertEdge(0,1);
 		gr.insertEdge(1,4);
 		gr.insertEdge(2,4);
@@ -66,9 +127,5 @@ class graphDemo {
 	    System.out.println(gr.checkEdge(0,4));
 	    System.out.println(gr.checkEdge(1,4));
 	    System.out.println(gr.checkEdge(3,0));
-		
-	    adjacencyMatrix am = new adjacencyMatrix();
-	    am.insertEdge(10,5);
-	    System.out.println(am.checkEdge(10,5));
 	}
 }
