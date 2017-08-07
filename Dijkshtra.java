@@ -17,17 +17,42 @@ class Node {
     
 }
 
+class Edge {
+    int weight;
+    int dest;
+    int src;
+    
+    Edge (int w, int d, int s) {
+        weight = w;
+        dest = d;
+        src = s;
+    }
+
+}
+
+class EdgeComparator implements Comparator<Object>
+{
+
+    public int compare(Object o1, Object o2)
+    {
+
+        Edge a1 = (Edge)o1;
+        Edge a2 = (Edge)o2;
+
+        return Integer.compare(a1.weight, a2.weight);
+    }
+}
+
 interface GraphInterface {
     public abstract void insertEdge(int node1, int node2, int weight);
     public abstract boolean checkEdge(int node1, int node2);
     public abstract int inDegree(int node1);
     public abstract int outDegree(int node1);
     public abstract LinkedList<Integer> getAdjacentNodes(int node);
-    public abstract LinkedList<Integer> getParentNodes(int node);
 }
 
 class adjacencyList implements GraphInterface {
-    List<LinkedList<Integer>> data;
+    List<LinkedList<Edge>> data;
     boolean isDirected;
     Node[] vertexData;
     int vertexCount;
@@ -35,22 +60,46 @@ class adjacencyList implements GraphInterface {
     adjacencyList(int size, boolean directed) {
         isDirected = directed;
         vertexData = new Node[size];
-        data = new ArrayList<LinkedList<Integer>>();
+        data = new ArrayList<LinkedList<Edge>>();
         vertexCount = size;
         for(int i = 0; i < size; i++) {
             vertexData[i] = new Node(i);
-            data.add(new LinkedList<Integer>());
+            data.add(new LinkedList<Edge>());
         }
     }
     
     public void insertEdge(int node1, int node2, int weight) {
-        data.get(node1).addLast(node2);
+        data.get(node1).addLast(new Edge(weight, node2, node1));
         if (!isDirected)
-            data.get(node2).addLast(node1);
+            data.get(node2).addLast(new Edge(weight, node1, node2));
     }
     
     public boolean checkEdge(int node1, int node2) {
-        return data.get(node1).indexOf(node2) != -1;
+        LinkedList<Edge> edges = new LinkedList<Edge>();
+        edges = (LinkedList<Edge>) data.get(node1).clone();
+        int present = 0;
+        while (edges.peek() != null) {
+            Edge e = edges.poll();
+            if (e.dest == node2) {
+                present = 1;
+                break;
+            }
+        }
+        return present != 0;
+    }
+    
+    public int getEdgeWeight(int node1, int node2) {
+        LinkedList<Edge> edges = new LinkedList<Edge>();
+        edges = (LinkedList<Edge>) data.get(node1).clone();
+        int weight = Integer.MAX_VALUE;
+        while (edges.peek() != null) {
+            Edge e = edges.poll();
+            if (e.dest == node2) {
+                weight = e.weight;
+                break;
+            }
+        }
+        return weight;
     }
     
     public int outDegree(int node1) {
@@ -60,21 +109,28 @@ class adjacencyList implements GraphInterface {
     public int inDegree(int node1) {
         int count = 0;
         for(int i = 0; i < vertexCount; i++) {
-            if (data.get(i).contains(node1))
-                count++;
+            LinkedList<Edge> edges = new LinkedList<Edge>();
+            edges = (LinkedList<Edge>) data.get(i).clone();
+            int present = 0;
+            while (edges.peek() != null) {
+                Edge e = edges.poll();
+                if (e.dest == node1) {
+                    count++;
+                    break;
+                }
+            }
         }
         return count;
     }
     
     public LinkedList<Integer> getAdjacentNodes(int node) {
-        return data.get(node);
-    }
-    
-    public LinkedList<Integer> getParentNodes(int node) {
+        LinkedList<Edge> adjNodes = new LinkedList<Edge>();
+        adjNodes = (LinkedList<Edge>) data.get(node).clone();
         LinkedList<Integer> nodes = new LinkedList<Integer>();
-        for (int i = 0; i < vertexCount; i++)
-            if (data.get(i).contains(node))
-                nodes.add(i);
+        while (adjNodes.peek() != null) {
+            Edge e = adjNodes.poll();
+            nodes.add(e.dest);
+        }
         return nodes;
     }
 
@@ -100,7 +156,6 @@ class adjacencyMatrix implements GraphInterface {
                 matrix[i][j] = Integer.MAX_VALUE;
             }
         }
-        
     }
     
     public void insertEdge(int node1, int node2, int weight) {
@@ -183,8 +238,7 @@ class Graph implements GraphInterface {
     }
     
     public int getEdgeWeight(int node1, int node2) {
-        return type == "Matrix"? am.getEdgeWeight(node1, node2) : 0; 
-        // al.getEdgeWeight(node1, node2);
+        return type == "Matrix"? am.getEdgeWeight(node1, node2) : al.getEdgeWeight(node1, node2);
     }
     
     public int inDegree(int node1) {
@@ -197,10 +251,6 @@ class Graph implements GraphInterface {
     
     public LinkedList<Integer> getAdjacentNodes(int node) {
         return type == "Matrix"? am.getAdjacentNodes(node) : al.getAdjacentNodes(node);
-    }
-    
-    public LinkedList<Integer> getParentNodes(int node) {
-        return type == "Matrix"? am.getParentNodes(node) : al.getParentNodes(node);
     }
     
     public Node[] getVertexData() {
@@ -253,14 +303,14 @@ class GraphDemo {
     }
     
 	public static void main (String[] args) {
-	    Graph gr = new Graph("Matrix", 6, false);
+	    Graph gr = new Graph("List", 6, false);
 		gr.insertEdge(5,0,4);
 		gr.insertEdge(5,2,8);
 		gr.insertEdge(2,3,3);
 		gr.insertEdge(3,1,15);
 		gr.insertEdge(4,1,2);
 		gr.insertEdge(4,0,11);
-	    
+		
 	    GraphDemo gd = new GraphDemo();
 	    gd.dijkshtra(gr);
 	}
