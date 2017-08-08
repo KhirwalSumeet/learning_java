@@ -14,8 +14,8 @@ class KnightTour {
         possibleMoves[5][0] = 2;
         possibleMoves[6][0] = -2;
         possibleMoves[7][0] = -2;
-        possibleMoves[0][1] = 2;
-        possibleMoves[1][1] = -2;
+        possibleMoves[0][1] = -2;
+        possibleMoves[1][1] = 2;
         possibleMoves[2][1] = 2;
         possibleMoves[3][1] = -2;
         possibleMoves[4][1] = 1;
@@ -31,7 +31,7 @@ class KnightTour {
         for (int[] next : possibleMoves) {
             nextX = currentX + next[0];
             nextY = currentY + next[1];
-            if (nextX > 0 && nextX < moves.length && nextY > 0 && nextY < moves.length ) {
+            if (nextX >= 0 && nextX < moves.length && nextY >= 0 && nextY < moves.length ) {
                 if (moves[nextX][nextY] == -1) {
                     moves[currentX][currentY] = moveCount;
                     if (tour(moves, moveCount + 1, nextX, nextY) == true)
@@ -43,8 +43,22 @@ class KnightTour {
         }
         return false;
     }
+    
+    public void knightTour(int startX, int startY, int size) {
+        int[][] moves = new int[size][size];
+        for (int[] row : moves)
+            Arrays.fill(row, -1);
+        boolean boardArrangement = tour(moves, 1, startX, startY);
+        System.out.println("Do we have any arrangement of knight tour ? " + boardArrangement);
+        if (boardArrangement)
+            printArrangement(moves);
+    }
+    
+    public void printArrangement(int[][] moves ) {
+        for (int[] row : moves)
+            System.out.println(Arrays.toString(row));
+    }
 }
-
 
 class ratMaze {
     int[][] possibleMoves, maze;
@@ -247,9 +261,15 @@ class BackTracing {
         ss.findSubset(35);
         
     }
+    
+    public void knightTour() {
+        KnightTour kt = new KnightTour();
+        kt.knightTour(0, 0, 8);
+    }
+    
     public static void main(String[] args) {
         System.out.println("Compile successfull");
         BackTracing bt = new BackTracing();
-        bt.findSubsetSum();
+        bt.knightTour();
     }
 }
