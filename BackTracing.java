@@ -160,6 +160,51 @@ class Nqueen {
     }
 }
 
+class SubsetSum {
+    boolean[] visited;
+    int[] set;
+    int sum;
+    
+    SubsetSum(int[] s) {
+        set = s;
+        visited = new boolean[s.length];
+        sum = 0;
+    }
+    
+    public void findSubset(int newSum) {
+        System.out.println("Do we have any subset with sum = " + newSum + " ? " + recursiveFind(sum, newSum));
+        printSubset();
+        
+    }
+    
+    public void printSubset() {
+        System.out.println("Subset :");
+        for (int i = 0; i < visited.length; i++) {
+            if (visited[i] == true)
+                System.out.print(set[i]+" ");
+            visited[i] = false;
+        }
+    }
+    
+    public boolean recursiveFind(int curSum, int netSum) {
+        if (curSum == netSum)
+            return true;
+        else if (curSum > netSum)
+            return false;
+        
+        for (int i = 0; i < set.length; i++) {
+            if (!visited[i]) {
+                visited[i] = true;
+                if (recursiveFind(curSum + set[i], netSum) == true )
+                    return true;
+                else
+                    visited[i] = false;
+            }
+        }
+        return false;
+    }
+}
+
 class BackTracing {
     
     public void ratmaze() {
@@ -196,9 +241,15 @@ class BackTracing {
         
     }
     
+    public void findSubsetSum() {
+        int[] set = new int[]{10, 15, 21, 5, 8, 6, 72};
+        SubsetSum ss = new SubsetSum(set);
+        ss.findSubset(35);
+        
+    }
     public static void main(String[] args) {
         System.out.println("Compile successfull");
         BackTracing bt = new BackTracing();
-        bt.nQueen();
+        bt.findSubsetSum();
     }
 }
