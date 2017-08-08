@@ -99,10 +99,70 @@ class ratMaze {
     }
 }
 
+class Nqueen {
+    int[][] board;
+    int size;
+    int[][] moves;
+    Nqueen(int s) {
+        size = s;
+        moves = new int[8][2];
+        int[][] temp = moves;
+        temp[0][0] = temp[2][1] = temp[4][0] = temp [6][1] = 0;
+        temp[0][1] = temp[1][1] = temp[1][0] = temp[2][0] = temp[3][0] = temp[7][1] = 1;
+        temp[3][1] = temp[4][1] = temp[5][1] = temp[6][0] = temp[5][0] = temp[7][0] = -1;
+    }
+    
+    public void initialiseBoard() {
+        board = new int[size][size];
+    }
+    
+    public boolean canPlaceQueen(int x, int y) {
+        if (board[x][y] == 1)
+            return false;
+        int nextX, nextY;
+        for (int[] next : moves) {
+            nextX = x + next[0];
+            nextY = y + next[1];
+            while (nextX > -1 && nextY > -1 && nextX < size && nextY < size) {
+                if (board[nextX][nextY] == 1)
+                    return false;
+                nextX = nextX + next[0];
+                nextY = nextY + next[1];
+            }
+        }
+        return true;
+    }
+    
+    public boolean placeAllQueens(int queenCount) {
+        if (queenCount == size)
+            return true;
+        for (int i = 0; i < size; i++) {
+            if (canPlaceQueen(queenCount, i) ) {
+                board[queenCount][i] = 1;
+                if (placeAllQueens(queenCount + 1)) 
+                    return true;
+                board[queenCount][i] = 0;
+            }
+        }
+        return false;
+    }
+    
+    public void printBoard() {
+        for (int[] row : board)
+            System.out.println(Arrays.toString(row));
+    }
+    
+    public void nqueenSolution () {
+        initialiseBoard();
+        System.out.println("Are queens placed succcessfully ? " + placeAllQueens(0));
+        printBoard();
+        
+    }
+}
+
 class BackTracing {
     
-    public static void main(String[] args) {
-        System.out.println("Compile successfull");
+    public void ratmaze() {
         int[][] possibleMoves = new int[3][2];
         possibleMoves[0][0] = 1;
         possibleMoves[0][1] = 0;
@@ -126,6 +186,19 @@ class BackTracing {
         int[] src = new int[]{0,0};
         int[] dest = new int[]{3,1};
         ratMaze rm = new ratMaze(possibleMoves);
-        rm.mazeSolution(maze, src, dest);
+        rm.mazeSolution(maze, src, dest);        
+    }
+    
+    public void nQueen() {
+        int size = 4;
+        Nqueen nq = new Nqueen(size);
+        nq.nqueenSolution();
+        
+    }
+    
+    public static void main(String[] args) {
+        System.out.println("Compile successfull");
+        BackTracing bt = new BackTracing();
+        bt.nQueen();
     }
 }
